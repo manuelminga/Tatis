@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carta abierta</title>
+    <style>
+      :root {
+        --bg-1: #fdf2f8;
+        --bg-2: #fce7f3;
+        --pink-1: #f472b6;
+        --pink-2: #ec4899;
+        --pink-3: #f9a8d4;
+        --rose: #ffe4e6;
+        --paper: #fff8fb;
+        --ink: #4b1d3a;
+        --shadow: rgba(120, 39, 82, 0.2);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at top, var(--bg-2), var(--bg-1) 42%, #f8ebf5 100%);
+        font-family: Georgia, "Times New Roman", serif;
+        color: var(--ink);
+      }
+
+      .scene {
+        perspective: 1600px;
+      }
+
+      .letter-card {
+        position: relative;
+        width: min(82vw, 420px);
+        height: min(74vh, 520px);
+        min-height: 420px;
+        max-height: 520px;
+        cursor: pointer;
+        transform-style: preserve-3d;
+        transition: transform 0.9s ease;
+      }
+
+      .letter-card.open {
+        transform: translateY(-8px);
+      }
+
+      .envelope {
+        position: absolute;
+        inset: 0;
+        border-radius: 24px;
+        background: linear-gradient(145deg, #f7d4e8, #f4b9d7 28%, #ef8ec2 100%);
+        box-shadow: 0 24px 30px var(--shadow);
+        overflow: hidden;
+        border: 2px solid rgba(120, 39, 82, 0.12);
+      }
+
+      .envelope::before,
+      .envelope::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(transparent 70%, rgba(255,255,255,0.25));
+      }
+
+      .envelope::after {
+        background: linear-gradient(90deg, transparent 0 49.5%, rgba(255,255,255,0.4) 49.5% 50.5%, transparent 50.5%);
+      }
+
+      .flap {
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 55%;
+        background: linear-gradient(135deg, #f9d4ea, #f28fc1);
+        clip-path: polygon(0 0, 50% 100%, 100% 0);
+        transform-origin: top center;
+        transition: transform 0.9s ease;
+        z-index: 4;
+        border-bottom: 3px solid rgba(138, 46, 91, 0.18);
+      }
+
+      .flap::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(transparent 70%, rgba(255,255,255,0.35));
+      }
+
+      .letter {
+        position: absolute;
+        left: 9%;
+        right: 9%;
+        top: 23%;
+        bottom: 7%;
+        background: rgba(255, 248, 251, 0.96);
+        border: 1px solid rgba(157, 72, 115, 0.15);
+        border-radius: 18px;
+        box-shadow: 0 16px 26px rgba(123, 52, 83, 0.1);
+        padding: 26px 24px 18px;
+        transform: translateY(0);
+        transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+        z-index: 2;
+      }
+
+      .letter-card.open .flap {
+        transform: rotateX(180deg);
+      }
+
+      .letter-card.open .letter {
+        transform: translateY(-118px);
+      }
+
+      .heart-wrap {
+        position: absolute;
+        left: 50%;
+        top: 52%;
+        transform: translate(-50%, -50%);
+        width: min(42vw, 170px);
+        height: min(42vw, 170px);
+        display: grid;
+        place-items: center;
+        opacity: 1;
+        transition: opacity 0.45s ease, transform 0.45s ease;
+      }
+
+      .letter-card.open .heart-wrap {
+        opacity: 0;
+        transform: translate(-50%, -30%) scale(0.7);
+      }
+
+      .letter-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(75, 29, 58, 0.7);
+      }
+
+      .stamp {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f9d0e3, #f5a4cb);
+        border: 2px solid rgba(160, 68, 114, 0.25);
+        box-shadow: inset 0 0 0 7px rgba(255,255,255,0.3);
+      }
+
+      .letter h1 {
+        margin: 0 0 8px;
+        font-size: clamp(2rem, 4vw, 2.8rem);
+        line-height: 1.1;
+        text-align: center;
+        color: #8a2e61;
+      }
+
+      .letter p {
+        margin: 0;
+        text-align: center;
+        line-height: 1.7;
+        font-size: 0.98rem;
+        color: rgba(75, 29, 58, 0.8);
+      }
+
+      .mini-photo {
+        width: min(28vw, 110px);
+        height: min(28vw, 110px);
+        object-fit: cover;
+        border-radius: 22px;
+        display: block;
+        margin: 18px auto 0;
+        border: 3px solid rgba(244, 114, 182, 0.36);
+        box-shadow: 0 10px 18px rgba(196, 79, 143, 0.18);
+      }
+
+      .heart {
+        position: relative;
+        width: min(30vw, 120px);
+        height: min(27vw, 110px);
+        transform: rotate(-45deg);
+        background: linear-gradient(135deg, #ff8bb8, #ff5c9a 70%, #f11c74);
+        border-radius: 24px 0 0 24px;
+        box-shadow: 0 12px 24px rgba(235, 69, 142, 0.28);
+      }
+
+      .heart::before,
+      .heart::after {
+        content: "";
+        position: absolute;
+        width: min(30vw, 120px);
+        height: min(30vw, 120px);
+        background: linear-gradient(225deg, #ff8bb8, #ff5c9a 70%, #f11c74);
+        border-radius: 50%;
+      }
+
+      .heart::before {
+        top: calc(min(30vw, 120px) * -0.48);
+        left: 0;
+      }
+
+      .heart::after {
+        top: 0;
+        left: calc(min(30vw, 120px) * 0.48);
+      }
+
+      .message {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 20px;
+        text-align: center;
+        font-size: 0.82rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(75, 29, 58, 0.7);
+      }
+
+      .hint {
+        margin-top: 18px;
+        text-align: center;
+        font-size: 0.78rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(90, 46, 74, 0.8);
+      }
+
+      .floating-hearts {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 10;
+      }
+
+      .floating-heart {
+        position: absolute;
+        bottom: -30px;
+        width: 18px;
+        height: 18px;
+        background: linear-gradient(135deg, #ff9ac4, #ff4d8d);
+        transform: rotate(-45deg);
+        border-radius: 4px 0 0 4px;
+        opacity: 0;
+        animation: floatUp 2.8s ease-in forwards;
+      }
+
+      .floating-heart::before,
+      .floating-heart::after {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        background: inherit;
+        border-radius: 50%;
+      }
+
+      .floating-heart::before {
+        top: -9px;
+        left: 0;
+      }
+
+      .floating-heart::after {
+        top: 0;
+        left: 9px;
+      }
+
+      @keyframes floatUp {
+        0% {
+          opacity: 0;
+          transform: translate3d(0, 0, 0) scale(0.4) rotate(-45deg);
+        }
+        15% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translate3d(var(--driftX), -120vh, 0) scale(1.2) rotate(-45deg);
+        }
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding: 20px 12px;
+        }
+
+        .letter-card {
+          width: min(88vw, 360px);
+          height: min(72vh, 500px);
+          min-height: 390px;
+        }
+
+        .letter {
+          left: 8%;
+          right: 8%;
+          top: 22%;
+          bottom: 8%;
+          padding: 18px 14px 14px;
+        }
+
+        .letter h1 {
+          font-size: 1.9rem;
+        }
+
+        .letter p {
+          font-size: 0.88rem;
+        }
+
+        .mini-photo {
+          width: 90px;
+          height: 90px;
+        }
+
+        .message,
+        .hint {
+          letter-spacing: 0.1em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="scene">
+      <div class="letter-card" id="letterCard" aria-label="Carta que se abre" tabindex="0">
+        <div class="envelope">
+          <div class="flap"></div>
+        </div>
+
+        <div class="letter">
+          <div class="letter-top">
+            <span>Para ti</span>
+            <span class="stamp" aria-hidden="true"></span>
+          </div>
+
+          <h1>Tatis preciosa</h1>
+
+          <p>
+            En esta carta te dejo un poquito de mi corazón, para recordarte lo mucho que te quiero.
+          </p>
+
+          <img
+            class="mini-photo"
+            src="./Tatis.jpeg"
+            alt="Tatis"
+          />
+
+          <div class="heart-wrap" aria-hidden="true">
+            <div class="heart"></div>
+          </div>
+        </div>
+
+        <div class="message">Abreme</div>
+      </div>
+      <div class="floating-hearts" id="floatingHearts" aria-hidden="true"></div>
+      <div class="hint">Haz clic en la carta</div>
+    </div>
+
+    <script>
+      const letterCard = document.getElementById('letterCard');
+      const floatingHearts = document.getElementById('floatingHearts');
+
+      const createFloatingHearts = () => {
+        floatingHearts.innerHTML = '';
+
+        for (let i = 0; i < 18; i++) {
+          const heart = document.createElement('span');
+          heart.className = 'floating-heart';
+          heart.style.left = `${Math.random() * 100}%`;
+          heart.style.animationDelay = `${(Math.random() * 0.7).toFixed(2)}s`;
+          heart.style.setProperty('--driftX', `${(Math.random() * 200 - 100).toFixed(0)}px`);
+          heart.style.opacity = '0';
+          floatingHearts.appendChild(heart);
+        }
+      };
+
+      const toggleOpen = () => {
+        letterCard.classList.toggle('open');
+        if (letterCard.classList.contains('open')) {
+          createFloatingHearts();
+        }
+      };
+
+      letterCard.addEventListener('click', toggleOpen);
+      letterCard.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggleOpen();
+        }
+      });
+    </script>
+  </body>
+</html>
