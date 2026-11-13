@@ -1,397 +1,677 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Carta abierta</title>
-    <style>
-      :root {
-        --bg-1: #fdf2f8;
-        --bg-2: #fce7f3;
-        --pink-1: #f472b6;
-        --pink-2: #ec4899;
-        --pink-3: #f9a8d4;
-        --rose: #ffe4e6;
-        --paper: #fff8fb;
-        --ink: #4b1d3a;
-        --shadow: rgba(120, 39, 82, 0.2);
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carta abierta</title>
+  <style>
+    :root {
+      --bg-1: #fffbea;
+      --bg-2: #fff3b0;
+      --gold-1: #facc15;
+      --gold-2: #eab308;
+      --gold-3: #fde68a;
+      --cream: #fff7cc;
+      --paper: #fffdf5;
+      --ink: #5c3b00;
+      --shadow: rgba(146, 98, 0, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: clamp(16px, 4vw, 40px);
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, var(--bg-2), var(--bg-1) 42%, #fff8d6 100%);
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+    }
+
+    .scene {
+      width: min(100%, 520px);
+      perspective: 1600px;
+    }
+
+    .letter-card {
+      position: relative;
+      width: min(100%, 420px);
+      height: clamp(360px, 74vh, 520px);
+      margin: 0 auto;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.9s ease;
+    }
+
+    .letter-card.open {
+      transform: translateY(-8px);
+    }
+
+    .envelope {
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: linear-gradient(145deg, #fff4b8, #f9d65c 28%, #e9b949 100%);
+      box-shadow: 0 24px 30px var(--shadow);
+      overflow: hidden;
+      border: 2px solid rgba(146, 98, 0, 0.18);
+    }
+
+    .envelope::before,
+    .envelope::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(transparent 70%, rgba(255, 255, 255, 0.25));
+    }
+
+    .envelope::after {
+      background: linear-gradient(90deg, transparent 0 49.5%, rgba(255, 255, 255, 0.4) 49.5% 50.5%, transparent 50.5%);
+    }
+
+    .flap {
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 55%;
+      background: linear-gradient(135deg, #fff8cc, #f2c94c);
+      clip-path: polygon(0 0, 50% 100%, 100% 0);
+      transform-origin: top center;
+      transition: transform 0.9s ease;
+      z-index: 4;
+      border-bottom: 3px solid rgba(146, 98, 0, 0.22);
+    }
+
+    .flap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(transparent 70%, rgba(255, 255, 255, 0.35));
+    }
+
+    .letter {
+      position: absolute;
+      left: 9%;
+      right: 9%;
+      top: 23%;
+      bottom: 7%;
+      background: rgba(255, 253, 245, 0.97);
+      border: 1px solid rgba(180, 130, 20, 0.22);
+      border-radius: 18px;
+      box-shadow: 0 16px 26px rgba(146, 98, 0, 0.12);
+      padding: 26px 24px 18px;
+      transform: translateY(0);
+      transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .letter-card.open .flap {
+      transform: rotateX(180deg);
+    }
+
+    .letter-card.open .letter {
+      transform: translateY(-118px);
+    }
+
+    .heart-wrap {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      width: min(42vw, 170px);
+      height: min(42vw, 170px);
+      display: grid;
+      place-items: center;
+      opacity: 1;
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+
+    .letter-card.open .heart-wrap {
+      opacity: 0;
+      transform: translate(-50%, -30%) scale(0.7);
+    }
+
+    .letter-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(92, 59, 0, 0.72);
+    }
+
+    .stamp {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fff4b8, #f6d365);
+      border: 2px solid rgba(180, 130, 20, 0.3);
+      box-shadow: inset 0 0 0 7px rgba(255, 255, 255, 0.3);
+    }
+
+    .letter h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      line-height: 1.1;
+      text-align: center;
+      color: #9a6700;
+    }
+
+    .letter p {
+      margin: 0;
+      text-align: center;
+      line-height: 1.7;
+      font-size: 0.98rem;
+      color: rgba(92, 59, 0, 0.82);
+    }
+
+    .letter-pages {
+      position: relative;
+      height: calc(100% - 112px);
+      min-height: 190px;
+    }
+
+    .letter-page {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(24px);
+      transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
+    }
+
+    .letter-page.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+
+    .letter-page .letter-top {
+      width: 100%;
+    }
+
+    .letter-page p {
+      max-width: 290px;
+    }
+
+    .mini-photo {
+      width: clamp(72px, 28vw, 110px);
+      height: clamp(72px, 28vw, 110px);
+      object-fit: cover;
+      border-radius: 22px;
+      display: block;
+      margin: 18px auto 0;
+      border: 3px solid rgba(234, 179, 8, 0.42);
+      box-shadow: 0 10px 18px rgba(180, 130, 20, 0.2);
+    }
+
+    .page-controls {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 12px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .page-controls.visible {
+      display: flex;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .page-button {
+      min-width: 76px;
+      min-height: 40px;
+      border: 1px solid rgba(180, 130, 20, 0.35);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(255, 241, 168, 0.92);
+      color: #8a5a00;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.78rem;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .page-button:hover,
+    .page-button:focus-visible {
+      background: #fff;
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .page-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+      transform: none;
+    }
+
+    .page-counter {
+      color: rgba(92, 59, 0, 0.68);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+    }
+
+    .heart {
+      position: relative;
+      width: min(30vw, 120px);
+      height: min(27vw, 110px);
+      transform: rotate(-45deg);
+      background: linear-gradient(135deg, #ffe680, #f8c928 70%, #e49b00);
+      border-radius: 24px 0 0 24px;
+      box-shadow: 0 12px 24px rgba(218, 147, 0, 0.3);
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: min(30vw, 120px);
+      height: min(30vw, 120px);
+      background: linear-gradient(225deg, #ffe680, #f8c928 70%, #e49b00);
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: calc(min(30vw, 120px) * -0.48);
+      left: 0;
+    }
+
+    .heart::after {
+      top: 0;
+      left: calc(min(30vw, 120px) * 0.48);
+    }
+
+    .message {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 20px;
+      text-align: center;
+      font-size: 0.82rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(92, 59, 0, 0.72);
+      padding: 8px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .letter-card.open .message {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .letter-card.open.last-page .message {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .hint {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(110, 75, 0, 0.82);
+    }
+
+    .floating-hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .floating-heart {
+      position: absolute;
+      bottom: -30px;
+      width: 18px;
+      height: 18px;
+      background: linear-gradient(135deg, #ffe680, #f2b705);
+      transform: rotate(-45deg);
+      border-radius: 4px 0 0 4px;
+      opacity: 0;
+      animation: floatUp 2.8s ease-in forwards;
+    }
+
+    .floating-heart::before,
+    .floating-heart::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: inherit;
+      border-radius: 50%;
+    }
+
+    .floating-heart::before {
+      top: -9px;
+      left: 0;
+    }
+
+    .floating-heart::after {
+      top: 0;
+      left: 9px;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(0.4) rotate(-45deg);
       }
 
-      * {
-        box-sizing: border-box;
+      15% {
+        opacity: 1;
       }
 
+      100% {
+        opacity: 0;
+        transform: translate3d(var(--driftX), -120vh, 0) scale(1.2) rotate(-45deg);
+      }
+    }
+
+    @media (max-width: 480px) {
       body {
-        margin: 0;
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        background: radial-gradient(circle at top, var(--bg-2), var(--bg-1) 42%, #f8ebf5 100%);
-        font-family: Georgia, "Times New Roman", serif;
-        color: var(--ink);
-      }
-
-      .scene {
-        perspective: 1600px;
+        padding: 20px 12px;
       }
 
       .letter-card {
-        position: relative;
-        width: min(82vw, 420px);
-        height: min(74vh, 520px);
-        min-height: 420px;
-        max-height: 520px;
-        cursor: pointer;
-        transform-style: preserve-3d;
-        transition: transform 0.9s ease;
-      }
-
-      .letter-card.open {
-        transform: translateY(-8px);
-      }
-
-      .envelope {
-        position: absolute;
-        inset: 0;
-        border-radius: 24px;
-        background: linear-gradient(145deg, #f7d4e8, #f4b9d7 28%, #ef8ec2 100%);
-        box-shadow: 0 24px 30px var(--shadow);
-        overflow: hidden;
-        border: 2px solid rgba(120, 39, 82, 0.12);
-      }
-
-      .envelope::before,
-      .envelope::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(transparent 70%, rgba(255,255,255,0.25));
-      }
-
-      .envelope::after {
-        background: linear-gradient(90deg, transparent 0 49.5%, rgba(255,255,255,0.4) 49.5% 50.5%, transparent 50.5%);
-      }
-
-      .flap {
-        position: absolute;
-        inset: 0 0 auto 0;
-        height: 55%;
-        background: linear-gradient(135deg, #f9d4ea, #f28fc1);
-        clip-path: polygon(0 0, 50% 100%, 100% 0);
-        transform-origin: top center;
-        transition: transform 0.9s ease;
-        z-index: 4;
-        border-bottom: 3px solid rgba(138, 46, 91, 0.18);
-      }
-
-      .flap::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(transparent 70%, rgba(255,255,255,0.35));
+        width: 100%;
+        height: min(74vh, 500px);
+        min-height: 360px;
       }
 
       .letter {
-        position: absolute;
-        left: 9%;
-        right: 9%;
-        top: 23%;
-        bottom: 7%;
-        background: rgba(255, 248, 251, 0.96);
-        border: 1px solid rgba(157, 72, 115, 0.15);
-        border-radius: 18px;
-        box-shadow: 0 16px 26px rgba(123, 52, 83, 0.1);
-        padding: 26px 24px 18px;
-        transform: translateY(0);
-        transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-        z-index: 2;
-      }
-
-      .letter-card.open .flap {
-        transform: rotateX(180deg);
-      }
-
-      .letter-card.open .letter {
-        transform: translateY(-118px);
-      }
-
-      .heart-wrap {
-        position: absolute;
-        left: 50%;
-        top: 52%;
-        transform: translate(-50%, -50%);
-        width: min(42vw, 170px);
-        height: min(42vw, 170px);
-        display: grid;
-        place-items: center;
-        opacity: 1;
-        transition: opacity 0.45s ease, transform 0.45s ease;
-      }
-
-      .letter-card.open .heart-wrap {
-        opacity: 0;
-        transform: translate(-50%, -30%) scale(0.7);
-      }
-
-      .letter-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 14px;
-        font-size: 0.72rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: rgba(75, 29, 58, 0.7);
-      }
-
-      .stamp {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #f9d0e3, #f5a4cb);
-        border: 2px solid rgba(160, 68, 114, 0.25);
-        box-shadow: inset 0 0 0 7px rgba(255,255,255,0.3);
+        left: 8%;
+        right: 8%;
+        top: 22%;
+        bottom: 8%;
+        padding: 18px 14px 14px;
       }
 
       .letter h1 {
-        margin: 0 0 8px;
-        font-size: clamp(2rem, 4vw, 2.8rem);
-        line-height: 1.1;
-        text-align: center;
-        color: #8a2e61;
+        font-size: 1.9rem;
       }
 
       .letter p {
-        margin: 0;
-        text-align: center;
-        line-height: 1.7;
-        font-size: 0.98rem;
-        color: rgba(75, 29, 58, 0.8);
+        font-size: 0.88rem;
+      }
+
+      .letter-pages {
+        height: calc(100% - 104px);
       }
 
       .mini-photo {
-        width: min(28vw, 110px);
-        height: min(28vw, 110px);
-        object-fit: cover;
-        border-radius: 22px;
-        display: block;
-        margin: 18px auto 0;
-        border: 3px solid rgba(244, 114, 182, 0.36);
-        box-shadow: 0 10px 18px rgba(196, 79, 143, 0.18);
+        width: clamp(72px, 25vw, 90px);
+        height: clamp(72px, 25vw, 90px);
       }
 
-      .heart {
-        position: relative;
-        width: min(30vw, 120px);
-        height: min(27vw, 110px);
-        transform: rotate(-45deg);
-        background: linear-gradient(135deg, #ff8bb8, #ff5c9a 70%, #f11c74);
-        border-radius: 24px 0 0 24px;
-        box-shadow: 0 12px 24px rgba(235, 69, 142, 0.28);
-      }
-
-      .heart::before,
-      .heart::after {
-        content: "";
-        position: absolute;
-        width: min(30vw, 120px);
-        height: min(30vw, 120px);
-        background: linear-gradient(225deg, #ff8bb8, #ff5c9a 70%, #f11c74);
-        border-radius: 50%;
-      }
-
-      .heart::before {
-        top: calc(min(30vw, 120px) * -0.48);
-        left: 0;
-      }
-
-      .heart::after {
-        top: 0;
-        left: calc(min(30vw, 120px) * 0.48);
-      }
-
-      .message {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 20px;
-        text-align: center;
-        font-size: 0.82rem;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        color: rgba(75, 29, 58, 0.7);
-      }
-
+      .message,
       .hint {
-        margin-top: 18px;
-        text-align: center;
+        letter-spacing: 0.1em;
+      }
+    }
+
+    @media (max-height: 520px) {
+      body {
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+
+      .letter-card {
+        height: 80vh;
+        min-height: 320px;
+      }
+
+      .letter-card.open .letter {
+        transform: translateY(-82px);
+      }
+
+      .letter {
+        padding-top: 18px;
+      }
+
+      .mini-photo {
+        margin-top: 10px;
+      }
+    }
+
+    @media (max-height: 380px) {
+      body {
+        padding: 6px;
+      }
+
+      .letter-card {
+        height: calc(100vh - 45px);
+        min-height: 260px;
+      }
+
+      .letter-card.open .letter {
+        transform: translateY(-58px);
+      }
+
+      .letter {
+        top: 20%;
+        bottom: 5%;
+        padding: 12px 10px 10px;
+      }
+
+      .letter-pages {
+        height: calc(100% - 88px);
+        min-height: 150px;
+      }
+
+      .letter h1 {
+        font-size: 1.55rem;
+      }
+
+      .letter p {
         font-size: 0.78rem;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: rgba(90, 46, 74, 0.8);
+        line-height: 1.35;
       }
 
-      .floating-hearts {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        overflow: hidden;
-        z-index: 10;
+      .mini-photo {
+        width: 64px;
+        height: 64px;
+        margin-top: 6px;
       }
 
-      .floating-heart {
-        position: absolute;
-        bottom: -30px;
-        width: 18px;
-        height: 18px;
-        background: linear-gradient(135deg, #ff9ac4, #ff4d8d);
-        transform: rotate(-45deg);
-        border-radius: 4px 0 0 4px;
-        opacity: 0;
-        animation: floatUp 2.8s ease-in forwards;
+      .page-button {
+        min-width: 64px;
+        min-height: 36px;
+        padding: 5px 8px;
+        font-size: 0.7rem;
       }
+    }
+  </style>
+</head>
 
-      .floating-heart::before,
-      .floating-heart::after {
-        content: "";
-        position: absolute;
-        width: 18px;
-        height: 18px;
-        background: inherit;
-        border-radius: 50%;
-      }
-
-      .floating-heart::before {
-        top: -9px;
-        left: 0;
-      }
-
-      .floating-heart::after {
-        top: 0;
-        left: 9px;
-      }
-
-      @keyframes floatUp {
-        0% {
-          opacity: 0;
-          transform: translate3d(0, 0, 0) scale(0.4) rotate(-45deg);
-        }
-        15% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0;
-          transform: translate3d(var(--driftX), -120vh, 0) scale(1.2) rotate(-45deg);
-        }
-      }
-
-      @media (max-width: 480px) {
-        body {
-          padding: 20px 12px;
-        }
-
-        .letter-card {
-          width: min(88vw, 360px);
-          height: min(72vh, 500px);
-          min-height: 390px;
-        }
-
-        .letter {
-          left: 8%;
-          right: 8%;
-          top: 22%;
-          bottom: 8%;
-          padding: 18px 14px 14px;
-        }
-
-        .letter h1 {
-          font-size: 1.9rem;
-        }
-
-        .letter p {
-          font-size: 0.88rem;
-        }
-
-        .mini-photo {
-          width: 90px;
-          height: 90px;
-        }
-
-        .message,
-        .hint {
-          letter-spacing: 0.1em;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="scene">
-      <div class="letter-card" id="letterCard" aria-label="Carta que se abre" tabindex="0">
-        <div class="envelope">
-          <div class="flap"></div>
-        </div>
-
-        <div class="letter">
-          <div class="letter-top">
-            <span>Para ti</span>
-            <span class="stamp" aria-hidden="true"></span>
-          </div>
-
-          <h1>Tatis preciosa</h1>
-
-          <p>
-            En esta carta te dejo un poquito de mi corazón, para recordarte lo mucho que te quiero.
-          </p>
-
-          <img
-            class="mini-photo"
-            src="./Tatis.jpeg"
-            alt="Tatis"
-          />
-
-          <div class="heart-wrap" aria-hidden="true">
-            <div class="heart"></div>
-          </div>
-        </div>
-
-        <div class="message">Abreme</div>
+<body>
+  <div class="scene">
+    <div class="letter-card" id="letterCard" aria-label="Carta que se abre" tabindex="0">
+      <div class="envelope">
+        <div class="flap"></div>
       </div>
-      <div class="floating-hearts" id="floatingHearts" aria-hidden="true"></div>
-      <div class="hint">Haz clic en la carta</div>
+
+      <div class="letter">
+
+        <div class="letter-pages" aria-live="polite">
+          <section class="letter-page active">
+            <div class="letter-top">
+              <span>Hola señorita</span>
+            </div>
+            <h1>Mi Tatis preciosa</h1>
+            <p>Le dedico unas palabras en señal de un poquito de mi amor.</p>
+            <img class="mini-photo" src="./Primero.jpeg" alt="Tatis" />
+          </section>
+
+          <section class="letter-page">
+            <p>Me da un poco de vergüenza admitir que me traes un poco loco.</p>
+            <img class="mini-photo" src="./Segundo.jpeg" alt="Un recuerdo especial" />
+          </section>
+
+          <section class="letter-page">
+            <p>Eso ya no es ningún secreto; a estas alturas, lo sabe casi todo el mundo, ya no sé cómo disimularlo.</p>
+            <img class="mini-photo" src="./Tercero.jpeg" alt="Tatis" />
+          </section>
+
+          <section class="letter-page">
+            <p>Pero, si quieres que te diga algo nuevo, te voy a decir algunas cosas.</p>
+            <img class="mini-photo" src="./Cuarto.jpeg" alt="Un recuerdo especial" />
+          </section>
+
+          <section class="letter-page">
+            <p>Te estoy queriendo de una forma que no conocía.</p>
+            <img class="mini-photo" src="./quinto.jpeg" alt="Tatis" />
+          </section>
+
+          <section class="letter-page">
+            <p>Me traes como quieres y, mientras más tiempo pasa, más me sigues gustando...</p>
+            <img class="mini-photo" src="./Sexto.jpeg" alt="Un recuerdo especial" />
+          </section>
+
+          <section class="letter-page">
+            <p>Sigo deseando que esto funcione, que algún día yo pueda ser uno de esos afortunados que pasan su vida con una sola mujer.</p>
+            <img class="mini-photo" src="./WhatsApp Image 2026-10-15 at 10.41.27 PM.jpeg" alt="Un recuerdo especial" />
+          </section>
+
+          <section class="letter-page">
+            <p>Hoy se cumple un mes desde que te conocí nuevamente. Me encanta esa sensación de conocerte tanto y, al mismo tiempo, sentir que no sé nada de ti. </p>
+          </section>
+
+          <section class="letter-page">
+            <p>Mi anhelo es seguir viéndote todos los días; me acostumbraste a ti. </p>
+          </section>
+
+          <section class="letter-page">
+            <h2>La amo con todo mi corazón, mi Tatiana de ojitos bellos, precioooooososss.</h2>
+            <p>Quiero entregarle mi vida al amor de mi vida. </p>
+          </section>
+        </div>
+
+        <div class="page-controls" aria-label="Navegación de la carta">
+          <button class="page-button" id="previousPage" type="button">Atrás</button>
+          <span class="page-counter" id="pageCounter">1 / 11</span>
+          <button class="page-button" id="nextPage" type="button">Siguiente</button>
+        </div>
+
+        <div class="heart-wrap" aria-hidden="true">
+          <div class="heart"></div>
+        </div>
+      </div>
+
+      <button class="message" id="message" type="button">Abreme</button>
     </div>
+    <div class="floating-hearts" id="floatingHearts" aria-hidden="true"></div>
+    <div class="hint">Haz clic en la carta</div>
+  </div>
 
-    <script>
-      const letterCard = document.getElementById('letterCard');
-      const floatingHearts = document.getElementById('floatingHearts');
+  <script>
+    const letterCard = document.getElementById('letterCard');
+    const floatingHearts = document.getElementById('floatingHearts');
+    const pages = Array.from(document.querySelectorAll('.letter-page'));
+    const previousPage = document.getElementById('previousPage');
+    const nextPage = document.getElementById('nextPage');
+    const pageCounter = document.getElementById('pageCounter');
+    const message = document.getElementById('message');
+    const pageControls = document.querySelector('.page-controls');
+    let currentPage = 0;
 
-      const createFloatingHearts = () => {
-        floatingHearts.innerHTML = '';
+    const createFloatingHearts = () => {
+      floatingHearts.innerHTML = '';
 
-        for (let i = 0; i < 18; i++) {
-          const heart = document.createElement('span');
-          heart.className = 'floating-heart';
-          heart.style.left = `${Math.random() * 100}%`;
-          heart.style.animationDelay = `${(Math.random() * 0.7).toFixed(2)}s`;
-          heart.style.setProperty('--driftX', `${(Math.random() * 200 - 100).toFixed(0)}px`);
-          heart.style.opacity = '0';
-          floatingHearts.appendChild(heart);
-        }
-      };
+      for (let i = 0; i < 18; i++) {
+        const heart = document.createElement('span');
+        heart.className = 'floating-heart';
+        heart.style.left = `${Math.random() * 100}%`;
+        heart.style.animationDelay = `${(Math.random() * 0.7).toFixed(2)}s`;
+        heart.style.setProperty('--driftX', `${(Math.random() * 200 - 100).toFixed(0)}px`);
+        heart.style.opacity = '0';
+        floatingHearts.appendChild(heart);
+      }
+    };
 
-      const toggleOpen = () => {
-        letterCard.classList.toggle('open');
-        if (letterCard.classList.contains('open')) {
-          createFloatingHearts();
-        }
-      };
-
-      letterCard.addEventListener('click', toggleOpen);
-      letterCard.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          toggleOpen();
-        }
+    const updatePage = (pageIndex, animateHearts = true) => {
+      currentPage = pageIndex;
+      letterCard.classList.toggle('last-page', currentPage === pages.length - 1);
+      pages.forEach((page, index) => {
+        page.classList.toggle('active', index === currentPage);
       });
-    </script>
-  </body>
+      previousPage.disabled = currentPage === 0;
+      nextPage.disabled = currentPage === pages.length - 1;
+      pageCounter.textContent = `${currentPage + 1} / ${pages.length}`;
+      message.textContent = currentPage === pages.length - 1 ? 'Cierre' : 'Abreme';
+      if (animateHearts) {
+        createFloatingHearts();
+      }
+    };
+
+    const toggleOpen = () => {
+      letterCard.classList.toggle('open');
+      const isOpen = letterCard.classList.contains('open');
+      pageControls.classList.toggle('visible', isOpen);
+      if (isOpen) {
+        updatePage(0, false);
+        createFloatingHearts();
+      }
+    };
+
+    const closeLetter = () => {
+      letterCard.classList.remove('open', 'last-page');
+      pageControls.classList.remove('visible');
+      updatePage(0, false);
+      floatingHearts.innerHTML = '';
+    };
+
+    letterCard.addEventListener('click', toggleOpen);
+    message.addEventListener('click', (event) => {
+      event.stopPropagation();
+      if (letterCard.classList.contains('open') && currentPage === pages.length - 1) {
+        closeLetter();
+      } else if (!letterCard.classList.contains('open')) {
+        toggleOpen();
+      }
+    });
+    previousPage.addEventListener('click', (event) => {
+      event.stopPropagation();
+      if (currentPage > 0) {
+        updatePage(currentPage - 1);
+      }
+    });
+    nextPage.addEventListener('click', (event) => {
+      event.stopPropagation();
+      if (currentPage < pages.length - 1) {
+        updatePage(currentPage + 1);
+      }
+    });
+    letterCard.addEventListener('keydown', (event) => {
+      if ((event.key === 'Enter' || event.key === ' ') && event.target === letterCard) {
+        event.preventDefault();
+        toggleOpen();
+      }
+    });
+
+    updatePage(0, false);
+  </script>
+</body>
+
 </html>
